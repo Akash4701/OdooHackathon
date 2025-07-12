@@ -1,15 +1,13 @@
 import { Router } from 'express';
 import {
-  postAnswer,
-  markAnswerAsAccepted
-} from '../controllers/answerController';
+  postAnswer
+} from '../controllers/answer.controller';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
 const router = Router();
 
 
-router.post('/:questionId', authMiddleware, postAnswer);
+router.post('/', postAnswer);
 
-router.put('/:answerId/accept', authMiddleware, markAnswerAsAccepted);
 
 export default router;

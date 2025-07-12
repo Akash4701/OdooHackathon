@@ -1,6 +1,17 @@
-import { Router } from "express";
+
+import { Router } from "express"
 import { authMiddleware } from "../middlewares/authMiddleware";
-import {VoteOnAnswer} from "../controllers/voteController";
+import { vote } from "../controllers/voteController";
 
 const router = Router();
-router.post('/:answerId', authMiddleware, VoteOnAnswer);
+router.post('/vote', vote);
+export default router;
+
+// import { Router } from "express";
+// import { authMiddleware } from "../middlewares/authMiddleware";
+// import {VoteOnAnswer} from "../controllers/voteController";
+
+// const router = Router();
+// router.post('/:answerId', authMiddleware, VoteOnAnswer);
+// export default router;
+

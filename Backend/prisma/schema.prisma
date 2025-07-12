@@ -40,7 +40,6 @@ model User {
   badges        UserBadge[]
   notifications Notification[]
   createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
 
   @@index([email])
 }
@@ -99,7 +98,7 @@ model Vote {
   questionId String?
   answer     Answer?   @relation(fields: [answerId], references: [id])
   answerId   String?
-  value      Int // +1 or -1
+  value      Int
   createdAt  DateTime  @default(now())
 
   @@unique([userId, questionId])

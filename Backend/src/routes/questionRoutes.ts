@@ -1,20 +1,24 @@
 import { Router } from 'express';
 import {
-  createQuestion,
-  getAllQuestions,
-  getQuestionById
-} from '../controllers/questionController';
+    createQuestion
+} from '../controllers/question.create.controller';
+
+import { getAllQuestion, getUserQuestion } from '../controllers/getQuestion.controller';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
 const router = Router();
 
 
-router.get('/', getAllQuestions);
+
+router.get('/', getAllQuestion);
 
 
-router.get('/:id', getQuestionById);
+router.get('/:id', getUserQuestion);
 
 
-router.post('/', authMiddleware, createQuestion);
+router.post('/', createQuestion);
 
-export default router;
+
+// router.post('/', createQuestion)
+
+export default router;  

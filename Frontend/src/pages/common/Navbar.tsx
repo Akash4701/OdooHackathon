@@ -8,7 +8,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ search, setSearch }) => {
-  const navigate = useNavigate();
+
   const [showMore, setShowMore] = useState(false);
   const navigate = useNavigate();
   return (
@@ -38,7 +38,7 @@ const Navbar: React.FC<NavbarProps> = ({ search, setSearch }) => {
       {/* Filters + Search */}
       <div className="sticky top-16 z-20 bg-gradient-to-br from-gray-900 via-black to-gray-800 py-4 border-b border-gray-700">
         <div className="flex flex-wrap justify-between items-center gap-4 px-4 py-4 w-full mx-auto">
-          <button className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition" onClick={()=>navigate('/editor')}>Ask New Question</button>
+          <button className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition" onClick={() => navigate('/editor')}>Ask New Question</button>
           <button className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition">Newest</button>
           <button className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition">Unanswered</button>
 

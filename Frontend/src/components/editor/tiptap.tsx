@@ -17,8 +17,10 @@ import {
   Quote,
   Type,
   X,
-  Plus
+  Plus,
+  Tags
 } from 'lucide-react';
+import { tags } from '../tags';
 
 // Mock emoji picker component
 const EmojiPicker = ({ onEmojiClick, show, onClose }) => {
@@ -66,63 +68,94 @@ const EmojiPicker = ({ onEmojiClick, show, onClose }) => {
 };
 
 // Tag input component
-const TagInput = ({ tags, setTags, placeholder = "Add tags..." }) => {
+const TagInput = ({ selectedTags, setSelectedTags, placeholder = "Add tags..." }) => {
   const [inputValue, setInputValue] = useState('');
+  const [filteredTags, setFilteredTags] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const inputRef = useRef(null);
 
+  useEffect(() => {
+    if (inputValue.trim()) {
+      const filtered = tags.filter(tag => 
+        tag.name.toLowerCase().includes(inputValue.toLowerCase()) &&
+        !selectedTags.some(selected => selected.id === tag.id)
+      );
+      setFilteredTags(filtered);
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+    }
+  }, [inputValue, selectedTags]);
+
   const addTag = (tag) => {
-    if (tag.trim() && !tags.includes(tag.trim())) {
-      setTags([...tags, tag.trim()]);
+    if (!selectedTags.some(selected => selected.id === tag.id) && selectedTags.length < 5) {
+      setSelectedTags([...selectedTags, tag]);
       setInputValue('');
+      setShowDropdown(false);
     }
   };
 
   const removeTag = (tagToRemove) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
+    setSelectedTags(selectedTags.filter(tag => tag.id !== tagToRemove.id));
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
+    if (e.key === 'Enter' && filteredTags.length > 0) {
       e.preventDefault();
-      addTag(inputValue);
-    } else if (e.key === 'Backspace' && inputValue === '' && tags.length > 0) {
-      removeTag(tags[tags.length - 1]);
+      addTag(filteredTags[0]);
+    } else if (e.key === 'Backspace' && inputValue === '' && selectedTags.length > 0) {
+      removeTag(selectedTags[selectedTags.length - 1]);
+    } else if (e.key === 'Escape') {
+      setShowDropdown(false);
     }
   };
 
   return (
-    <div 
-      className="flex flex-wrap gap-2 p-3 border border-gray-600 bg-gray-800 rounded-lg min-h-[42px] cursor-text focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all"
-      onClick={() => inputRef.current?.focus()}
-    >
-      {tags.map((tag, index) => (
-        <span key={index} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-900 text-blue-200 rounded-full text-sm border border-blue-700">
-          {tag}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              removeTag(tag);
-            }}
-            className="hover:bg-blue-800 rounded-full p-0.5 text-blue-300 hover:text-blue-100"
-          >
-            <X size={12} />
-          </button>
-        </span>
-      ))}
-      <input
-        ref={inputRef}
-        type="text"
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        onBlur={() => {
-          if (inputValue.trim()) {
-            addTag(inputValue);
-          }
-        }}
-        placeholder={tags.length === 0 ? placeholder : ''}
-        className="flex-1 min-w-0 border-none outline-none bg-transparent text-sm text-gray-200 placeholder-gray-500"
-      />
+    <div className="relative">
+      <div 
+        className="flex flex-wrap gap-2 p-3 border border-gray-600 bg-gray-800 rounded-lg min-h-[42px] cursor-text focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all"
+        onClick={() => inputRef.current?.focus()}
+      >
+        {selectedTags.map((tag) => (
+          <span key={tag.id} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-900 text-blue-200 rounded-full text-sm border border-blue-700">
+            {tag.name}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                removeTag(tag);
+              }}
+              className="hover:bg-blue-800 rounded-full p-0.5 text-blue-300 hover:text-blue-100"
+            >
+              <X size={12} />
+            </button>
+          </span>
+        ))}
+        <input
+          ref={inputRef}
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+          placeholder={selectedTags.length === 0 ? placeholder : ''}
+          className="flex-1 min-w-0 border-none outline-none bg-transparent text-sm text-gray-200 placeholder-gray-500"
+        />
+      </div>
+      
+      {/* Dropdown */}
+      {showDropdown && filteredTags.length > 0 && (
+        <div className="absolute top-full left-0 right-0 z-10 bg-gray-800 border border-gray-600 rounded-lg shadow-xl mt-1 max-h-60 overflow-y-auto">
+          {filteredTags.map((tag) => (
+            <button
+              key={tag.id}
+              onClick={() => addTag(tag)}
+              className="w-full text-left px-4 py-2 hover:bg-gray-700 text-gray-200 transition-colors"
+            >
+              {tag.name}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -350,7 +383,7 @@ const RichTextEditor = ({ content, onChange, editable = true, placeholder = "Sta
 const QuestionForm = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('<p></p>');
-  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
   const [isPreview, setIsPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState('');
@@ -366,7 +399,7 @@ const QuestionForm = () => {
       return;
     }
 
-    if (tags.length === 0) {
+    if (selectedTags.length === 0) {
       alert('Please add at least one tag');
       return;
     }
@@ -377,16 +410,24 @@ const QuestionForm = () => {
     const questionData = {
       title: title.trim(),
       description: description,
-      tagIds: tags,
-      
+      tagIds: selectedTags.map(tag => tag.id), // Send only the IDs to backend
     };
     console.log(questionData);
+
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      alert('You must be logged in to submit a question.');
+      setIsSaving(false);
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:8000/api/v1/question', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(questionData),
       });
@@ -396,7 +437,7 @@ const QuestionForm = () => {
         // Reset form
         setTitle('');
         setDescription('<p></p>');
-        setTags([]);
+        setSelectedTags([]);
         setIsPreview(false);
       } else {
         setSaveStatus('Failed to submit question');
@@ -410,7 +451,8 @@ const QuestionForm = () => {
     }
   };
 
-  const suggestedTags = ['React', 'JavaScript', 'TypeScript', 'Node.js', 'Express', 'MongoDB', 'PostgreSQL', 'JWT', 'API', 'Frontend', 'Backend', 'CSS', 'HTML', 'Vue.js', 'Angular', 'Python', 'Django', 'Flask', 'REST API', 'GraphQL'];
+  // Get first 10 tags for suggestions
+  const suggestedTags = tags.slice(0, 10);
 
   return (
     <div className="min-h-screen bg-black p-6">
@@ -484,9 +526,9 @@ const QuestionForm = () => {
                 Tags <span className="text-red-400">*</span>
               </label>
               <TagInput
-                tags={tags}
-                setTags={setTags}
-                placeholder="Add tags (press Enter or comma to add)..."
+                selectedTags={selectedTags}
+                setSelectedTags={setSelectedTags}
+                placeholder="Search and add tags..."
               />
               <p className="text-sm text-gray-400 mt-1">Add up to 5 relevant tags</p>
               
@@ -494,20 +536,20 @@ const QuestionForm = () => {
               <div className="mt-3">
                 <p className="text-sm font-medium text-gray-300 mb-2">Suggested tags:</p>
                 <div className="flex flex-wrap gap-2">
-                  {suggestedTags.slice(0, 10).map((tag) => (
+                  {suggestedTags.map((tag) => (
                     <button
-                      key={tag}
+                      key={tag.id}
                       type="button"
                       onClick={() => {
-                        if (tags.length < 5 && !tags.includes(tag)) {
-                          setTags([...tags, tag]);
+                        if (selectedTags.length < 5 && !selectedTags.some(selected => selected.id === tag.id)) {
+                          setSelectedTags([...selectedTags, tag]);
                         }
                       }}
-                      disabled={tags.includes(tag) || tags.length >= 5}
+                      disabled={selectedTags.some(selected => selected.id === tag.id) || selectedTags.length >= 5}
                       className="px-3 py-1 text-sm bg-gray-800 text-gray-300 rounded-full hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-gray-600"
                     >
                       <Plus size={12} className="inline mr-1" />
-                      {tag}
+                      {tag.name}
                     </button>
                   ))}
                 </div>

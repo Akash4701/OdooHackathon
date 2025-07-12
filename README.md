@@ -1,7 +1,3 @@
-# 📚 StackIt — A Minimal Q&A Forum Platform
-
----
-
 ## 👥 Team Members
 
 - **Pritam Chakraborty**  
@@ -13,7 +9,7 @@
 - **Subhadro Samaddar**  
   📧 [subhadrosamaddar@gmail.com](mailto:subhadrosamaddar@gmail.com)
 
-- **Akash Saha**  
+- 🏆 **Akash Saha (Team Leader)**  
   📧 [saha.akash4701@gmail.com](mailto:saha.akash4701@gmail.com)
 
 ---

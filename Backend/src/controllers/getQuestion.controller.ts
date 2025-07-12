@@ -32,7 +32,9 @@ export const getAllQuestion = async (req: Request, res: Response) => {
                     answers: {
                         select: {
                             id: true,
-                            isAccepted: true,
+                            content: true,
+                            author: true
+
                         },
                     },
                     comments: {
@@ -94,14 +96,10 @@ export const getUserQuestion = async (req: Request, res: Response) => {
                     answers: {
                         select: {
                             id: true,
-                            isAccepted: true,
+                            content: true,
+                            author: true
                         },
-                    },
-                    comments: {
-                        select: {
-                            id: true,
-                        },
-                    },
+                    }
                 },
             }),
             prisma.question.count({

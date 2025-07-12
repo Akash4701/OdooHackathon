@@ -17,6 +17,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const db_config_1 = __importDefault(require("./lib/db.config"));
+const questionRoutes_1 = __importDefault(require("./routes/questionRoutes"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: 'http://localhost:5173',
@@ -24,7 +25,6 @@ app.use((0, cors_1.default)({
 }));
 app.use(express_1.default.json({ limit: "16kb" }));
 app.use(express_1.default.urlencoded({ extended: true, limit: "16kb" }));
-app.use(express_1.default.static("public"));
 app.use((0, cookie_parser_1.default)());
 app.get("/api/healthcheck", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -36,6 +36,7 @@ app.get("/api/healthcheck", (_req, res) => __awaiter(void 0, void 0, void 0, fun
         res.status(500).json({ status: "error", message: "Database connection error" });
     }
 }));
+app.use("/api/v1/question", questionRoutes_1.default);
 process.on("SIGINT", () => __awaiter(void 0, void 0, void 0, function* () {
     yield db_config_1.default.$disconnect();
     process.exit(0);

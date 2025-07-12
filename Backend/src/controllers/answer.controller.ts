@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/db.config';
 import { createAnswerSchema } from '../validation/answer.schema';
+import { notificationQueue } from '../lib/notificationQueue';
 
 export const postAnswer = async (req: Request, res: Response) => {
     try {
@@ -30,15 +31,14 @@ export const postAnswer = async (req: Request, res: Response) => {
 
         // Optional notification
         if (question.authorId !== userId) {
-            await prisma.notification.create({
-                data: {
-                    userId: question.authorId,
-                    type: 'ANSWER_CREATED',
-                    message: 'Someone answered your question.',
-                    relatedId: answer.id,
-                },
+            await notificationQueue.add('send_notification', {
+                userId: question.authorId,
+                type: 'ANSWER_CREATED',
+                message: 'Someone answered your question.',
+                relatedId: answer.id,
             });
         }
+
 
         res.status(201).json(answer);
     } catch (err) {

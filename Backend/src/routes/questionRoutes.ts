@@ -13,7 +13,7 @@ const router = Router();
 router.get('/', getAllQuestion);
 
 
-router.get('/:id', getUserQuestion);
+router.get('/:id', authMiddleware, getUserQuestion);
 
 
 router.post('/', authMiddleware, createQuestion);

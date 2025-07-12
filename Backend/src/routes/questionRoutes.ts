@@ -16,7 +16,7 @@ router.get('/', getAllQuestion);
 router.get('/:id', getUserQuestion);
 
 
-router.post('/', createQuestion);
+router.post('/', authMiddleware, createQuestion);
 
 
 // router.post('/', createQuestion)

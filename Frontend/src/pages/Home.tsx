@@ -37,7 +37,7 @@ const Home = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-6 overflow-hidden">
+    <div className="relative min-h-screen  text-white p-6 overflow-hidden">
       {/* Floating background */}
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-float"></div>

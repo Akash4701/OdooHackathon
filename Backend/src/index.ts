@@ -14,7 +14,7 @@ export const io = new Server(server, {
     }
 });
 
-io.on("connection", (socket) => {
+io.on("connection", (socket:any) => {
     const userId = socket.handshake.query.userId;
     if (userId && typeof userId === 'string') {
         socket.join(userId); // Join room by user ID

@@ -1,493 +1,553 @@
-import React, { useState, useCallback } from 'react'
-import { useEditor, EditorContent } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import TextAlign from '@tiptap/extension-text-align'
-import Link from '@tiptap/extension-link'
-import Image from '@tiptap/extension-image'
-import Placeholder from '@tiptap/extension-placeholder'
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Bold, 
   Italic, 
   Strikethrough, 
+  Underline,
   List, 
   ListOrdered, 
-  Link2,
-  ImageIcon,
-  AlignLeft,
-  AlignCenter,
+  Link, 
+  AlignLeft, 
+  AlignCenter, 
   AlignRight,
   Smile,
   Save,
   Eye,
-  Code,
+  Edit,
   Quote,
-  Minus,
-  Undo,
-  Redo,
-  Plus,
-  X
-} from 'lucide-react'
+  Type,
+  X,
+  Plus
+} from 'lucide-react';
 
-const emojis = ['😀', '😂', '😍', '🤔', '👍', '👎', '❤️', '🔥', '💯', '🎉', '🚀', '💡', '⭐', '✨', '🌟', '🎯']
+// Mock emoji picker component since we can't import emoji-picker-react
+const EmojiPicker = ({ onEmojiClick, show, onClose }) => {
+  const emojis = [
+    '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
+    '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
+    '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩',
+    '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣',
+    '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬',
+    '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗',
+    '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯',
+    '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐',
+    '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '😈',
+    '👿', '👹', '👺', '🤡', '💩', '👻', '💀', '☠️', '👽', '👾',
+    '🤖', '🎃', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿',
+    '😾', '👋', '🤚', '🖐️', '✋', '🖖', '👌', '🤏', '✌️', '🤞'
+  ];
 
-const MenuBar = ({ editor, isMobile }) => {
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
-  const [showLinkDialog, setShowLinkDialog] = useState(false)
-  const [linkUrl, setLinkUrl] = useState('')
-
-  const addLink = useCallback(() => {
-    if (linkUrl) {
-      editor.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run()
-      setLinkUrl('')
-      setShowLinkDialog(false)
-    }
-  }, [editor, linkUrl])
-
-  const addImage = useCallback(() => {
-    const url = window.prompt('Enter image URL:')
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run()
-    }
-  }, [editor])
-
-  const addEmoji = useCallback((emoji) => {
-    editor.chain().focus().insertContent(emoji).run()
-    setShowEmojiPicker(false)
-  }, [editor])
-
-  if (!editor) return null
-
-  const buttonClass = "flex items-center justify-center p-2 rounded-md border border-gray-300 bg-white hover:bg-gray-50 active:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-  const activeClass = "bg-blue-500 text-white hover:bg-blue-600"
+  if (!show) return null;
 
   return (
-    <div className={`border-b border-gray-200 bg-gray-50 ${isMobile ? 'p-2' : 'p-3'}`}>
-      <div className={`flex flex-wrap gap-1 ${isMobile ? 'gap-1' : 'gap-2'}`}>
-        {/* Text Formatting */}
+    <div className="absolute top-full left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-80 max-h-60 overflow-y-auto">
+      <div className="flex justify-between items-center mb-3">
+        <h3 className="text-sm font-medium text-gray-700">Choose Emoji</h3>
         <button
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`${buttonClass} ${editor.isActive('bold') ? activeClass : ''}`}
-          title="Bold"
+          onClick={onClose}
+          className="p-1 rounded-full hover:bg-gray-100"
         >
-          <Bold size={isMobile ? 16 : 18} />
-        </button>
-        
-        <button
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`${buttonClass} ${editor.isActive('italic') ? activeClass : ''}`}
-          title="Italic"
-        >
-          <Italic size={isMobile ? 16 : 18} />
-        </button>
-        
-        <button
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-          className={`${buttonClass} ${editor.isActive('strike') ? activeClass : ''}`}
-          title="Strikethrough"
-        >
-          <Strikethrough size={isMobile ? 16 : 18} />
-        </button>
-
-        {/* Lists */}
-        <button
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`${buttonClass} ${editor.isActive('bulletList') ? activeClass : ''}`}
-          title="Bullet List"
-        >
-          <List size={isMobile ? 16 : 18} />
-        </button>
-        
-        <button
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`${buttonClass} ${editor.isActive('orderedList') ? activeClass : ''}`}
-          title="Numbered List"
-        >
-          <ListOrdered size={isMobile ? 16 : 18} />
-        </button>
-
-        {/* Text Alignment */}
-        <button
-          onClick={() => editor.chain().focus().setTextAlign('left').run()}
-          className={`${buttonClass} ${editor.isActive({ textAlign: 'left' }) ? activeClass : ''}`}
-          title="Align Left"
-        >
-          <AlignLeft size={isMobile ? 16 : 18} />
-        </button>
-        
-        <button
-          onClick={() => editor.chain().focus().setTextAlign('center').run()}
-          className={`${buttonClass} ${editor.isActive({ textAlign: 'center' }) ? activeClass : ''}`}
-          title="Align Center"
-        >
-          <AlignCenter size={isMobile ? 16 : 18} />
-        </button>
-        
-        <button
-          onClick={() => editor.chain().focus().setTextAlign('right').run()}
-          className={`${buttonClass} ${editor.isActive({ textAlign: 'right' }) ? activeClass : ''}`}
-          title="Align Right"
-        >
-          <AlignRight size={isMobile ? 16 : 18} />
-        </button>
-
-        {/* Emoji Picker */}
-        <div className="relative">
-          <button
-            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className={buttonClass}
-            title="Insert Emoji"
-          >
-            <Smile size={isMobile ? 16 : 18} />
-          </button>
-          {showEmojiPicker && (
-            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-2 z-10">
-              <div className="grid grid-cols-4 gap-1">
-                {emojis.map((emoji, index) => (
-                  <button
-                    key={index}
-                    onClick={() => addEmoji(emoji)}
-                    className="p-1 hover:bg-gray-100 rounded text-lg"
-                  >
-                    {emoji}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Link */}
-        <div className="relative">
-          <button
-            onClick={() => setShowLinkDialog(!showLinkDialog)}
-            className={`${buttonClass} ${editor.isActive('link') ? activeClass : ''}`}
-            title="Insert Link"
-          >
-            <Link2 size={isMobile ? 16 : 18} />
-          </button>
-          {showLinkDialog && (
-            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-3 z-10 min-w-64">
-              <input
-                type="url"
-                placeholder="Enter URL"
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded mb-2"
-                onKeyPress={(e) => e.key === 'Enter' && addLink()}
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={addLink}
-                  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                >
-                  Add
-                </button>
-                <button
-                  onClick={() => setShowLinkDialog(false)}
-                  className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Image */}
-        <button
-          onClick={addImage}
-          className={buttonClass}
-          title="Insert Image"
-        >
-          <ImageIcon size={isMobile ? 16 : 18} />
-        </button>
-
-        {/* Additional formatting */}
-        <button
-          onClick={() => editor.chain().focus().toggleCode().run()}
-          className={`${buttonClass} ${editor.isActive('code') ? activeClass : ''}`}
-          title="Inline Code"
-        >
-          <Code size={isMobile ? 16 : 18} />
-        </button>
-
-        <button
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={`${buttonClass} ${editor.isActive('blockquote') ? activeClass : ''}`}
-          title="Quote"
-        >
-          <Quote size={isMobile ? 16 : 18} />
-        </button>
-
-        <button
-          onClick={() => editor.chain().focus().setHorizontalRule().run()}
-          className={buttonClass}
-          title="Horizontal Rule"
-        >
-          <Minus size={isMobile ? 16 : 18} />
-        </button>
-
-        {/* Undo/Redo */}
-        <button
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().chain().focus().undo().run()}
-          className={buttonClass}
-          title="Undo"
-        >
-          <Undo size={isMobile ? 16 : 18} />
-        </button>
-        
-        <button
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().chain().focus().redo().run()}
-          className={buttonClass}
-          title="Redo"
-        >
-          <Redo size={isMobile ? 16 : 18} />
+          <X size={16} />
         </button>
       </div>
-    </div>
-  )
-}
-
-const TagInput = ({ tags, setTags, isMobile }) => {
-  const [inputValue, setInputValue] = useState('')
-
-  const addTag = (tag) => {
-    if (tag && !tags.includes(tag)) {
-      setTags([...tags, tag])
-      setInputValue('')
-    }
-  }
-
-  const removeTag = (tagToRemove) => {
-    setTags(tags.filter(tag => tag !== tagToRemove))
-  }
-
-  return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">Tags</label>
-      <div className="flex flex-wrap gap-2 mb-2">
-        {tags.map((tag, index) => (
-          <span
+      <div className="grid grid-cols-8 gap-2">
+        {emojis.map((emoji, index) => (
+          <button
             key={index}
-            className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+            onClick={() => onEmojiClick({ emoji })}
+            className="text-xl hover:bg-gray-100 p-2 rounded transition-colors"
           >
-            {tag}
-            <button
-              onClick={() => removeTag(tag)}
-              className="hover:text-blue-600"
-            >
-              <X size={14} />
-            </button>
-          </span>
+            {emoji}
+          </button>
         ))}
       </div>
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              addTag(inputValue.trim())
-            }
-          }}
-          placeholder="Add a tag..."
-          className="flex-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-        <button
-          onClick={() => addTag(inputValue.trim())}
-          className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-        >
-          <Plus size={16} />
-        </button>
-      </div>
     </div>
-  )
-}
+  );
+};
 
-const TiptapEditor = () => {
-  const [title, setTitle] = useState('')
-  const [tags, setTags] = useState([])
-  const [isSaving, setIsSaving] = useState(false)
-  const [previewMode, setPreviewMode] = useState(false)
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+// Tag input component
+const TagInput = ({ tags, setTags, placeholder = "Add tags..." }) => {
+  const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef(null);
 
-  React.useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768)
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  const addTag = (tag) => {
+    if (tag.trim() && !tags.includes(tag.trim())) {
+      setTags([...tags, tag.trim()]);
+      setInputValue('');
+    }
+  };
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-      }),
-      Link.configure({
-        openOnClick: false,
-      }),
-      Image.configure({
-        HTMLAttributes: {
-          class: 'max-w-full h-auto rounded-lg',
-        },
-      }),
-      Placeholder.configure({
-        placeholder: 'Start writing your content here...',
-      }),
-    ],
-    content: '<p>Start writing your amazing content here! 🚀</p>',
-    editorProps: {
-      attributes: {
-        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-xl mx-auto focus:outline-none min-h-[300px] p-4',
-      },
-    },
-  })
+  const removeTag = (tagToRemove) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
 
-  const saveContent = async () => {
-    if (!editor || !title.trim()) {
-      alert('Please provide a title and content')
-      return
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      addTag(inputValue);
+    } else if (e.key === 'Backspace' && inputValue === '' && tags.length > 0) {
+      removeTag(tags[tags.length - 1]);
+    }
+  };
+
+  return (
+    <div 
+      className="flex flex-wrap gap-2 p-3 border border-gray-300 rounded-lg min-h-[42px] cursor-text focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+      onClick={() => inputRef.current?.focus()}
+    >
+      {tags.map((tag, index) => (
+        <span key={index} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+          {tag}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              removeTag(tag);
+            }}
+            className="hover:bg-blue-200 rounded-full p-0.5"
+          >
+            <X size={12} />
+          </button>
+        </span>
+      ))}
+      <input
+        ref={inputRef}
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        onBlur={() => {
+          if (inputValue.trim()) {
+            addTag(inputValue);
+          }
+        }}
+        placeholder={tags.length === 0 ? placeholder : ''}
+        className="flex-1 min-w-0 border-none outline-none bg-transparent text-sm"
+      />
+    </div>
+  );
+};
+
+// Rich Text Editor Component
+const RichTextEditor = ({ content, onChange, editable = true, placeholder = "Start typing..." }) => {
+  const editorRef = useRef(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (editorRef.current && content !== editorRef.current.innerHTML) {
+      editorRef.current.innerHTML = content;
+    }
+  }, [content]);
+
+  const handleInput = () => {
+    if (editorRef.current && onChange) {
+      onChange(editorRef.current.innerHTML);
+    }
+  };
+
+  const execCommand = (command, value = null) => {
+    document.execCommand(command, false, value);
+    handleInput();
+  };
+
+  const insertText = (text) => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const textNode = document.createTextNode(text);
+        range.insertNode(textNode);
+        range.setStartAfter(textNode);
+        range.setEndAfter(textNode);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        handleInput();
+      }
+    }
+  };
+
+  const insertLink = () => {
+    const url = prompt('Enter URL:');
+    if (url) {
+      const text = prompt('Enter link text:') || url;
+      execCommand('insertHTML', `<a href="${url}" target="_blank">${text}</a>`);
+    }
+  };
+
+ 
+
+  const onEmojiClick = (emojiData) => {
+    insertText(emojiData.emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const toolbarButtons = [
+    { icon: Bold, command: 'bold', title: 'Bold' },
+    { icon: Italic, command: 'italic', title: 'Italic' },
+    { icon: Strikethrough, command: 'strikeThrough', title: 'Strikethrough' },
+    { icon: Underline, command: 'underline', title: 'Underline' },
+    { icon: ListOrdered, command: 'insertOrderedList', title: 'Numbered List' },
+    { icon: List, command: 'insertUnorderedList', title: 'Bullet List' },
+    { icon: AlignLeft, command: 'justifyLeft', title: 'Align Left' },
+    { icon: AlignCenter, command: 'justifyCenter', title: 'Align Center' },
+    { icon: AlignRight, command: 'justifyRight', title: 'Align Right' },
+    { icon: Quote, command: 'formatBlock', value: 'blockquote', title: 'Quote' },
+  ];
+
+  return (
+    <div className="border border-gray-300 rounded-lg overflow-hidden">
+      {/* Toolbar */}
+      {editable && (
+        <div className="bg-gray-50 border-b p-2 flex flex-wrap items-center gap-1">
+          {/* Text Formatting */}
+          <div className="flex items-center gap-1 border-r pr-2 mr-2">
+            {toolbarButtons.slice(0, 4).map((button, index) => (
+              <button
+                key={index}
+                onClick={() => execCommand(button.command, button.value)}
+                className="p-2 rounded hover:bg-gray-200 transition-colors"
+                title={button.title}
+              >
+                <button.icon size={16} />
+              </button>
+            ))}
+          </div>
+
+          {/* Lists */}
+          <div className="flex items-center gap-1 border-r pr-2 mr-2">
+            {toolbarButtons.slice(4, 6).map((button, index) => (
+              <button
+                key={index}
+                onClick={() => execCommand(button.command, button.value)}
+                className="p-2 rounded hover:bg-gray-200 transition-colors"
+                title={button.title}
+              >
+                <button.icon size={16} />
+              </button>
+            ))}
+          </div>
+
+          {/* Alignment */}
+          <div className="flex items-center gap-1 border-r pr-2 mr-2">
+            {toolbarButtons.slice(6, 9).map((button, index) => (
+              <button
+                key={index}
+                onClick={() => execCommand(button.command, button.value)}
+                className="p-2 rounded hover:bg-gray-200 transition-colors"
+                title={button.title}
+              >
+                <button.icon size={16} />
+              </button>
+            ))}
+          </div>
+
+          {/* Quote */}
+          <div className="flex items-center gap-1 border-r pr-2 mr-2">
+            <button
+              onClick={() => execCommand('formatBlock', 'blockquote')}
+              className="p-2 rounded hover:bg-gray-200 transition-colors"
+              title="Quote"
+            >
+              <Quote size={16} />
+            </button>
+          </div>
+
+          {/* Media & Links */}
+          <div className="flex items-center gap-1 border-r pr-2 mr-2">
+            <button
+              onClick={insertLink}
+              className="p-2 rounded hover:bg-gray-200 transition-colors"
+              title="Insert Link"
+            >
+              <Link size={16} />
+            </button>
+            
+           
+            
+            <div className="relative">
+              <button
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="p-2 rounded hover:bg-gray-200 transition-colors"
+                title="Insert Emoji"
+              >
+                <Smile size={16} />
+              </button>
+              <EmojiPicker
+                show={showEmojiPicker}
+                onEmojiClick={onEmojiClick}
+                onClose={() => setShowEmojiPicker(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Editor Content */}
+      <div
+        ref={editorRef}
+        contentEditable={editable}
+        onInput={handleInput}
+        className={`p-4 min-h-[300px] max-h-[500px] overflow-y-auto focus:outline-none ${
+          editable ? 'bg-white' : 'bg-gray-50'
+        }`}
+        style={{
+          lineHeight: '1.6',
+        }}
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+
+      {/* Placeholder */}
+      {editable && !content && (
+        <div className="absolute top-16 left-4 text-gray-400 pointer-events-none">
+          {placeholder}
+        </div>
+      )}
+
+      {/* Hidden file input */}
+     
+
+      <style jsx>{`
+        [contenteditable] ul {
+          list-style-type: disc;
+          padding-left: 20px;
+        }
+        [contenteditable] ol {
+          list-style-type: decimal;
+          padding-left: 20px;
+        }
+        [contenteditable] li {
+          margin: 4px 0;
+        }
+        [contenteditable] blockquote {
+          border-left: 4px solid #e5e7eb;
+          padding-left: 16px;
+          margin: 16px 0;
+          font-style: italic;
+          color: #6b7280;
+        }
+        [contenteditable] h1, [contenteditable] h2, [contenteditable] h3 {
+          font-weight: bold;
+          margin: 16px 0 8px 0;
+        }
+        [contenteditable] h1 { font-size: 2em; }
+        [contenteditable] h2 { font-size: 1.5em; }
+        [contenteditable] h3 { font-size: 1.2em; }
+        [contenteditable] p {
+          margin: 8px 0;
+        }
+        [contenteditable] a {
+          color: #3b82f6;
+          text-decoration: underline;
+        }
+        [contenteditable] img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 8px;
+          margin: 8px 0;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+// Main Question Form Component
+const QuestionForm = () => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('<p></p>');
+  const [tags, setTags] = useState([]);
+  const [isPreview, setIsPreview] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('');
+
+  const handleSubmit = async () => {
+    
+    if (!title.trim()) {
+      alert('Please enter a title');
+      return;
+    }
+    
+    if (!description.trim() || description === '<p></p>') {
+      alert('Please enter a description');
+      return;
     }
 
-    setIsSaving(true)
+    if (tags.length === 0) {
+      alert('Please add at least one tag');
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveStatus('');
+
+    const questionData = {
+      title: title.trim(),
+      description: description,
+      tags: tags,
+      timestamp: new Date().toISOString(),
+
+    };
+
     try {
-      const htmlContent = editor.getHTML()
-      
-      const response = await fetch('/api/save-content', {
+      const response = await fetch('/api/questions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          title: title.trim(),
-          content: htmlContent,
-          tags: tags,
-          createdAt: new Date().toISOString(),
-        }),
-      })
+        body: JSON.stringify(questionData),
+      });
 
       if (response.ok) {
-        const result = await response.json()
-        alert('Content saved successfully!')
-        console.log('Saved content:', result)
+        setSaveStatus('Question submitted successfully!');
+        // Reset form
+        setTitle('');
+        setDescription('<p></p>');
+        setTags([]);
+        setIsPreview(false);
       } else {
-        throw new Error('Failed to save content')
+        setSaveStatus('Failed to submit question');
       }
     } catch (error) {
-      console.error('Error saving content:', error)
-      alert('Error saving content. Please try again.')
+      setSaveStatus('Error submitting question: ' + error.message);
+      console.log('Question data that would be sent:', questionData);
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
+      setTimeout(() => setSaveStatus(''), 5000);
     }
-  }
+  };
+
+  const suggestedTags = ['React', 'JavaScript', 'TypeScript', 'Node.js', 'Express', 'MongoDB', 'PostgreSQL', 'JWT', 'API', 'Frontend', 'Backend', 'CSS', 'HTML', 'Vue.js', 'Angular', 'Python', 'Django', 'Flask', 'REST API', 'GraphQL'];
 
   return (
-    <div className={`max-w-4xl mx-auto ${isMobile ? 'p-4' : 'p-6'} bg-white`}>
-      <div className="space-y-6">
+    <div className="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className={`font-bold text-gray-900 ${isMobile ? 'text-xl' : 'text-2xl'}`}>
-            Rich Text Editor
-          </h1>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setPreviewMode(!previewMode)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
-            >
-              <Eye size={16} />
-              {previewMode ? 'Edit' : 'Preview'}
-            </button>
-            <button
-              onClick={saveContent}
-              disabled={isSaving}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <Save size={16} />
-              {isSaving ? 'Saving...' : 'Save'}
-            </button>
-          </div>
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+          <h1 className="text-3xl font-bold">Ask a Question</h1>
+          <p className="text-blue-100 mt-2">Share your question with the community</p>
         </div>
 
-        {/* Title Input */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Title
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter a short and descriptive title..."
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        {/* Tags Input */}
-        <TagInput tags={tags} setTags={setTags} isMobile={isMobile} />
-
-        {/* Editor */}
-        <div className="border border-gray-300 rounded-lg overflow-hidden bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-700 bg-gray-50 px-4 py-2 border-b border-gray-200">
-            Description
+        {/* Form */}
+        <div className="p-6 space-y-6">
+          {/* Title */}
+          <div>
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+              Title <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter a short and descriptive title..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              maxLength={200}
+            />
+            <p className="text-sm text-gray-500 mt-1">{title.length}/200 characters</p>
           </div>
-          
-          {!previewMode ? (
-            <>
-              <MenuBar editor={editor} isMobile={isMobile} />
-              <div className="min-h-[400px]">
-                <EditorContent editor={editor} />
-              </div>
-            </>
-          ) : (
-            <div className="p-4 min-h-[400px]">
-              <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl mx-auto">
-                <h2 className="text-2xl font-bold mb-4">{title || 'Untitled'}</h2>
-                {tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
+
+          {/* Description */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Description <span className="text-red-500">*</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setIsPreview(!isPreview)}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  isPreview 
+                    ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {isPreview ? <Edit size={16} className="inline mr-1" /> : <Eye size={16} className="inline mr-1" />}
+                {isPreview ? 'Edit' : 'Preview'}
+              </button>
+            </div>
+            
+            {isPreview ? (
+              <div className="border border-gray-300 rounded-lg p-4 bg-gray-50 min-h-[300px]">
+                <h3 className="text-lg font-semibold mb-3">Preview</h3>
                 <div 
-                  dangerouslySetInnerHTML={{ 
-                    __html: editor?.getHTML() || '<p>No content yet...</p>' 
-                  }} 
+                  className="prose max-w-none"
+                  dangerouslySetInnerHTML={{ __html: description }}
                 />
               </div>
+            ) : (
+              <RichTextEditor
+                content={description}
+                onChange={setDescription}
+                placeholder="Describe your question in detail. Include any relevant code, error messages, or context..."
+              />
+            )}
+          </div>
+
+          {/* Tags */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tags <span className="text-red-500">*</span>
+            </label>
+            <TagInput
+              tags={tags}
+              setTags={setTags}
+              placeholder="Add tags (press Enter or comma to add)..."
+            />
+            <p className="text-sm text-gray-500 mt-1">Add up to 5 relevant tags</p>
+            
+            {/* Suggested Tags */}
+            <div className="mt-3">
+              <p className="text-sm font-medium text-gray-700 mb-2">Suggested tags:</p>
+              <div className="flex flex-wrap gap-2">
+                {suggestedTags.slice(0, 10).map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => {
+                      if (tags.length < 5 && !tags.includes(tag)) {
+                        setTags([...tags, tag]);
+                      }
+                    }}
+                    disabled={tags.includes(tag) || tags.length >= 5}
+                    className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <Plus size={12} className="inline mr-1" />
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex items-center justify-between pt-4 border-t">
+            <div className="text-sm text-gray-500">
+              All fields marked with <span className="text-red-500">*</span> are required
+            </div>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            >
+              <Save size={18} />
+              {isSaving ? 'Submitting...' : 'Submit Question'}
+            </button>
+          </div>
+
+          {/* Save Status */}
+          {saveStatus && (
+            <div className={`p-3 rounded-lg ${
+              saveStatus.includes('successfully') 
+                ? 'bg-green-50 text-green-800 border border-green-200' 
+                : 'bg-red-50 text-red-800 border border-red-200'
+            }`}>
+              {saveStatus}
             </div>
           )}
         </div>
-
-        {/* Info */}
-        <div className="text-sm text-gray-500 bg-gray-50 p-4 rounded-lg">
-          <p><strong>Features included:</strong></p>
-          <ul className="list-disc list-inside mt-2 space-y-1">
-            <li>Bold, Italic, Strikethrough formatting</li>
-            <li>Numbered and bullet lists</li>
-            <li>Emoji insertion</li>
-            <li>Hyperlink insertion</li>
-            <li>Image upload support</li>
-            <li>Text alignment (Left, Center, Right)</li>
-            <li>Code blocks, quotes, and horizontal rules</li>
-            <li>Undo/Redo functionality</li>
-            <li>Mobile responsive design</li>
-            <li>Multi-select tags</li>
-            <li>HTML output for database storage</li>
-          </ul>
-        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TiptapEditor
+export default QuestionForm;

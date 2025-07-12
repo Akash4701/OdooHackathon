@@ -34,7 +34,7 @@ app.get("/api/healthcheck", async (_req, res) => {
 app.use("/api/v1", routes);
 app.use("/api/v1/question", questionRouter)
 app.use("/api/v1/answer", answerRouter)
-app.use("/api/v1/answer", voteRouter)
+app.use("/api/v1", voteRouter)
 
 process.on("SIGINT", async () => {
   await prisma.$disconnect();

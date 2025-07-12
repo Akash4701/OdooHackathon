@@ -17,7 +17,7 @@ type CreateQuestionInput = z.infer<typeof CreateQuestionSchema>;
 export const createQuestion = async (req: Request, res: Response) => {
 
     console.log("whdxkjwbk")
-    const userId = "1";
+    const userId = req.user?.id;
 
     if (!userId) {
         return res.status(401).json({ error: 'Unauthorized' });

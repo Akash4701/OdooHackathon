@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Layout from "./pages/Layout";
-import SignUp from "./pages/auth/SignUp";
-import Login from "./pages/auth/Login";
+import Auth from './pages/auth/Auth';
 
 
 function App() {
@@ -11,8 +10,7 @@ function App() {
 				<Route path="/" element={<Layout />}>
 					{/* <Route index element={<HomePage />} /> */}
 
-					<Route path="signup" element={<SignUp />} />
-					<Route path="login" element={<Login />} />
+					<Route path="auth" element={<Auth />} />
 				</Route>
 			</Routes>
 		</Router>

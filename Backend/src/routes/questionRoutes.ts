@@ -16,7 +16,4 @@ const router = Router();
 
 router.post('/', authMiddleware, createQuestion);
 
-
-router.post('/', createQuestion)
-
 export default router;  

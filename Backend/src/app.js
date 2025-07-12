@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import prisma from '../src/db/db.config.js'
+import prisma from './db/db.config.js'
 
 dotenv.config({ path: './.env' });
 

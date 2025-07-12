@@ -10,14 +10,30 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ search, setSearch }) => {
   const navigate = useNavigate();
   const [showMore, setShowMore] = useState(false);
-	const navigate = useNavigate();
+  const navigate = useNavigate();
   return (
     <>
       {/* Logo + Login */}
+      {/* Logo + Login */}
       <div className="sticky top-0 z-30 bg-gradient-to-br from-gray-900 via-black to-gray-800 border-b border-gray-700 p-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white cursor-pointer" onClick={()=> navigate('home')}>StackIt</h1>
-        <button className="cursor-pointer px-4 py-2 bg-purple-600 rounded hover:bg-purple-700 transition" onClick={()=>navigate('/auth')}>Login</button>
+        <h1
+          className="text-2xl font-bold text-white cursor-pointer"
+          onClick={() => navigate('home')}
+        >
+          StackIt
+        </h1>
+        {
+          !localStorage.getItem("token") && (
+            <button
+              className="cursor-pointer px-4 py-2 bg-purple-600 rounded hover:bg-purple-700 transition"
+              onClick={() => navigate('/auth')}
+            >
+              Login
+            </button>
+          )
+        }
       </div>
+
 
       {/* Filters + Search */}
       <div className="sticky top-16 z-20 bg-gradient-to-br from-gray-900 via-black to-gray-800 py-4 border-b border-gray-700">

@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "this is a backend for web analytics platform",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "build": "tsc",

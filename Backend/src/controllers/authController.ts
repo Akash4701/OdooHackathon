@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../lib/db.config.js';
 
-export const signup = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
   try {

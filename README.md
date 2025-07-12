@@ -1,70 +1,151 @@
-Here’s a clean and clear `README.md` you can use for your project:
+# 📚 StackIt — A Minimal Q&A Forum Platform
 
 ---
 
-````markdown
-# Fullstack Project Setup Guide
+## 👥 Team Members
 
-This project contains a `frontend` and `backend` built using Node.js and Prisma.
+- **Pritam Chakraborty**  
+  📧 [pc2617@it.jgec.ac.in](mailto:pc2617@it.jgec.ac.in)
 
-## 🚀 Getting Started
+- **Saikat Bera**  
+  📧 [berasaikat729@gmail.com](mailto:berasaikat729@gmail.com)
 
-Follow the steps below to set up and run the project locally.
+- **Subhadro Samaddar**  
+  📧 [subhadrosamaddar@gmail.com](mailto:subhadrosamaddar@gmail.com)
+
+- **Akash Saha**  
+  📧 [saha.akash4701@gmail.com](mailto:saha.akash4701@gmail.com)
 
 ---
 
-## 📁 Frontend
+## 🎥 Project Demo
 
-### 1. Navigate to the frontend directory:
+▶️ **Watch our full walkthrough video on Loom:**  
+[https://www.loom.com/share/6fac7964ec30438497afb8709da8bbc3?sid=2eb5b929-ce2f-4cdb-9850-9e78b62133c1](https://www.loom.com/share/6fac7964ec30438497afb8709da8bbc3?sid=2eb5b929-ce2f-4cdb-9850-9e78b62133c1)
+
+---
+
+## 🚀 Overview
+
+**StackIt** is a lightweight, modern question-and-answer platform inspired by Stack Overflow.  
+It’s built for structured knowledge sharing, collaborative learning, and fostering a focused community around asking & answering questions.
+
+Designed to be minimal and user-friendly, StackIt keeps the core interactions simple, fast, and visually appealing.
+
+---
+
+## ✨ Features
+
+✅ **JWT Authentication** — Secure signup & login  
+✅ **Ask & Browse Questions** — Create posts, view community queries  
+✅ **Search & Filters** — Easily find topics by title & tags  
+✅ **Pagination** — Navigate large question sets smoothly  
+✅ **Sticky Navbar & Floating UI Elements** — Keeps primary actions always accessible  
+✅ **Framer Motion Animations** — Subtle entrance & hover effects for modern feel  
+✅ **Socket.IO Ready** — Prepared for future real-time features (notifications, live updates)
+
+---
+
+## 🛠 Tech Stack
+
+| Layer      | Tools / Frameworks                    |
+|------------|--------------------------------------|
+| Frontend   | React, TypeScript, Tailwind CSS, Framer Motion |
+| Backend    | Node.js, Express, Prisma ORM         |
+| Database   | PostgreSQL                           |
+| Auth       | JWT                                  |
+| Realtime   | Socket.IO                            |
+
+---
+
+## ⚙️ Getting Started
+
+Follow these steps to set up and run the project locally.
+
+---
+
+### 🚀 Clone the repository
+
+```bash
+git clone <your-repo-url>
+cd StackIt
+```
+
+---
+
+### 📦 Frontend
 
 ```bash
 cd frontend
-````
+npm install
+npm run dev
+```
+Runs on: [http://localhost:5173](http://localhost:5173)
 
-### 2. Install dependencies:
+---
+
+### 🖥 Backend
 
 ```bash
+cd ../backend
 npm install
+npx prisma generate
+npx prisma db push
+npm run dev
+```
+Runs on: [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 🔐 Environment Variables
+
+Create a `.env` file in your `backend` with:
+
+```env
+DATABASE_URL="postgresql://<username>:<password>@localhost:5432/<dbname>"
+JWT_SECRET="your-secret-key"
+PORT=3000
 ```
 
-### 3. Start the development server:
+Make sure your PostgreSQL server is up and running.
 
-```bash
-npm run dev
+---
+
+## 🌳 Project Structure
+
+```
+StackIt/
+│
+├── frontend/
+│   └── src/pages, components, styles...
+│
+├── backend/
+│   ├── src/
+│   │   ├── routes/
+│   │   ├── controllers/
+│   │   └── ...
+│   └── prisma/schema.prisma
+│
+└── README.md
 ```
 
 ---
 
-## 🖥️ Backend
+## 🚀 Future Roadmap
 
-### 4. Navigate to the backend directory:
+- 📝 Rich-text editor for questions & answers  
+- 🔔 Real-time notifications using Socket.IO  
+- 👤 User profiles & following system  
+- 📊 Leaderboards / Most Answered / Trending tags  
+- 🖼 Image uploads in posts & comments
 
-```bash
-cd ../backend
-```
+---
 
-### 5. Install dependencies:
+## 🤝 License
 
-```bash
-npm install
-```
+This project is open-source under the MIT License.  
+Feel free to fork, use, and contribute!
 
-### 6. Generate Prisma client:
+---
 
-```bash
-npx prisma generate
-```
-
-### 7. Push database schema to your database:
-
-```bash
-npx prisma db push
-```
-
-### 8. Start the backend server:
-
-```bash
-npm run dev
-```
-
-
+> Crafted with ❤️ by Pritam, Saikat, Subhadro & Akash — bringing collaborative knowledge sharing to life with StackIt.

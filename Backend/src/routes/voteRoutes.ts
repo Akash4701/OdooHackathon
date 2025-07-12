@@ -4,7 +4,7 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 import { vote } from "../controllers/voteController";
 
 const router = Router();
-router.post('/vote', vote);
+router.post('/vote',authMiddleware, vote);
 export default router;
 
 // import { Router } from "express";

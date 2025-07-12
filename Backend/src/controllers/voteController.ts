@@ -15,11 +15,11 @@ declare global {
 
 export const vote = async (req: Request, res: Response) => {
     try {
-        // const user = req.user;
-        // if (!user?.id) return res.status(401).json({ message: 'Unauthorized' });
+        const user = req.user;
+        if (!user?.id) return res.status(401).json({ message: 'Unauthorized' });
 
-        const userId = "1"
 
+        const userId = user.id;
         const { targetId, targetType, value } = voteSchema.parse(req.body);
 
         const isUpvote = value === 'up';

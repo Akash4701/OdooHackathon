@@ -29,7 +29,7 @@ export const postAnswer = async (req: Request, res: Response) => {
             },
         });
 
-        // Optional notification
+
         if (question.authorId !== userId) {
             await prisma.notification.create({
                 data: {

@@ -3,19 +3,19 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import prisma from '../src/db/db.config.js'
+import prisma from './lib/db.config.js'
 
 dotenv.config({ path: './.env' });
 
 
-// import useRouter from "./routes/events.route.js";
+
 
 const app = express();
 
 
 app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true
+  origin: 'http://localhost:5173',
+  credentials: true
 }));
 
 app.use(express.json({ limit: "16kb" }));
@@ -26,7 +26,7 @@ app.use(cookieParser());
 
 app.get("/api/healthcheck", async (req, res) => {
   try {
-    // Try a basic Prisma call to ensure DB is connected
+
     await prisma.user.findFirst();  // Doesn't return anything if empty, but checks connection
     res.status(200).json({ status: "ok", message: "Database connected" });
   } catch (err) {
@@ -35,12 +35,11 @@ app.get("/api/healthcheck", async (req, res) => {
   }
 });
 
-// app.use("/api/events", useRouter);
 
 
 process.on("SIGINT", async () => {
-    await prisma.$disconnect();
-    process.exit(0);
+  await prisma.$disconnect();
+  process.exit(0);
 });
 
-export { app}; 
+export { app }; 

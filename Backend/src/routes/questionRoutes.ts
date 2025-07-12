@@ -4,7 +4,7 @@ import {
   getAllQuestions,
   getQuestionById
 } from '../controllers/questionController';
-import { authMiddleware } from '../middleware/authMiddleware';
+import { authMiddleware } from '../middlewares/authMiddleware';
 
 const router = Router();
 

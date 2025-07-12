@@ -31,7 +31,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800 p-6 relative overflow-hidden">
+    <div className="flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800 p-10 relative overflow-hidden">
       {/* Floating glow circles */}
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>

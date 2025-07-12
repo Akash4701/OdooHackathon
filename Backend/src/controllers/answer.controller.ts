@@ -29,16 +29,17 @@ export const postAnswer = async (req: Request, res: Response) => {
             },
         });
 
+        // Optional notification
         if (question.authorId !== userId) {
-            await notificationQueue.add('send_notification', {
-                userId: question.authorId,
-                type: 'ANSWER_CREATED',
-                message: 'Someone answered your question.',
-                relatedId: answer.id,
+            await prisma.notification.create({
+                data: {
+                    userId: question.authorId,
+                    type: 'ANSWER_CREATED',
+                    message: 'Someone answered your question.',
+                    relatedId: answer.id,
+                },
             });
         }
-
-
 
         res.status(201).json(answer);
     } catch (err) {

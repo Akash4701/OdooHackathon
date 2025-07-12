@@ -10,13 +10,27 @@ interface OutletContextType {
   setSearch: (val: string) => void;
 }
 
+// Updated interface to match your API response
 interface Question {
   id: string;
   title: string;
   description: string;
-  tags: string[];
-  author: string;
-  answerCount: number;
+  tags: Array<{
+    id: string;
+    questionId: string;
+    tagId: string;
+    tag: {
+      id: string;
+      name: string;
+    };
+  }>;
+  author: {
+    id: string;
+    name: string;
+    email: string;
+    reputation: number;
+  };
+  answers: any[];
 }
 
 const Home = () => {
@@ -35,7 +49,7 @@ const Home = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:8000/api/v1/question?page=${page}&limit=${ITEMS_PER_PAGE}`
+          `http://localhost:8001/api/v1/question?page=${page}&limit=${ITEMS_PER_PAGE}`
         );
         const data = await response.json();
 
@@ -43,8 +57,9 @@ const Home = () => {
           throw new Error(data.message || "Something went wrong");
         }
 
-        setQuestions(data.questions);
-        setTotalPages(Math.ceil(data.totalCount / ITEMS_PER_PAGE));
+        // Updated to match your API response structure
+        setQuestions(data.data || []);
+        setTotalPages(data.pagination?.totalPages || 1);
       } catch (err: any) {
         setError(err.message || "Failed to fetch questions");
       } finally {
@@ -74,6 +89,12 @@ const Home = () => {
     navigate(`/${questionId}/answer`);
   };
 
+  const handleViewAnswers = (question: Question) => {
+    // Instead of navigating to a new page, we can show answers inline
+    // or navigate with the question data
+    navigate(`/${question.id}/answers`, { state: { question } });
+  };
+
   return (
     <div className="relative min-h-screen text-white p-6 overflow-hidden">
       {/* Floating background */}
@@ -97,20 +118,20 @@ const Home = () => {
               <h2 className="text-xl font-semibold mb-2">{question.title}</h2>
               <p className="text-gray-400 mb-3">{question.description}</p>
               <div className="flex items-center space-x-3 mb-3">
-                {question.tags.map((tag) => (
+                {question.tags.map((tagObj) => (
                   <span
-                    key={tag}
+                    key={tagObj.id}
                     className="px-3 py-1 bg-gray-700 rounded-full text-sm"
                   >
-                    {tag}
+                    {tagObj.tag.name}
                   </span>
                 ))}
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-4 text-sm text-gray-400">
-                  <span>By {question.author}</span>
+                  <span>By {question.author.name}</span>
                   <span className="bg-purple-600 px-3 py-1 rounded-full text-white">
-                    {question.answerCount} ans
+                    {question.answers.length} ans
                   </span>
                 </div>
                 <div className="flex gap-3">
@@ -122,7 +143,7 @@ const Home = () => {
                     <span>Reply</span>
                   </button>
                   <button
-                    onClick={() => navigate(`/${question.id}/answers`)}
+                    onClick={() => handleViewAnswers(question)}
                     className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-full transition duration-300 transform hover:scale-105 text-sm"
                   >
                     <span>View Answers</span>
@@ -139,11 +160,10 @@ const Home = () => {
           <button
             onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             disabled={page === 1}
-            className={`w-8 h-8 flex items-center justify-center rounded-full transition ${
-              page === 1
+            className={`w-8 h-8 flex items-center justify-center rounded-full transition ${page === 1
                 ? "bg-gray-600 cursor-not-allowed"
                 : "bg-gray-700 hover:bg-purple-600"
-            }`}
+              }`}
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -152,11 +172,10 @@ const Home = () => {
             <button
               key={p}
               onClick={() => setPage(p)}
-              className={`w-8 h-8 flex items-center justify-center rounded-full transition ${
-                p === page
+              className={`w-8 h-8 flex items-center justify-center rounded-full transition ${p === page
                   ? "bg-purple-600 text-white"
                   : "bg-gray-700 hover:bg-purple-600"
-              }`}
+                }`}
             >
               {p}
             </button>
@@ -165,11 +184,10 @@ const Home = () => {
           <button
             onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
             disabled={page === totalPages}
-            className={`w-8 h-8 flex items-center justify-center rounded-full transition ${
-              page === totalPages
+            className={`w-8 h-8 flex items-center justify-center rounded-full transition ${page === totalPages
                 ? "bg-gray-600 cursor-not-allowed"
                 : "bg-gray-700 hover:bg-purple-600"
-            }`}
+              }`}
           >
             <ChevronRight className="w-4 h-4" />
           </button>

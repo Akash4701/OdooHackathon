@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        input,
+        button {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        .notification {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Socket.IO Notification Test</h1>
+
+    <div>
+        <input type="text" id="userId" placeholder="Enter User ID" />
+        <button id="connect">Connect</button>
+        <button id="disconnect" disabled>Disconnect</button>
+    </div>
+
+    <div id="status" class="status disconnected">Disconnected</div>
+
+    <div>
+        <input type="text" id="testMessage" placeholder="Test message" />
+        <button id="sendTest" disabled>Send Test</button>
+    </div>
+
+    <h3>Notifications:</h3>
+    <div id="notifications"></div>
+
+    <script>
+        let socket = null;
+
+        const userIdInput = document.getElementById('userId');
+        const connectBtn = document.getElementById('connect');
+        const disconnectBtn = document.getElementById('disconnect');
+        const statusDiv = document.getElementById('status');
+        const testMessageInput = document.getElementById('testMessage');
+        const sendTestBtn = document.getElementById('sendTest');
+        const notificationsDiv = document.getElementById('notifications');
+
+        connectBtn.addEventListener('click', () => {
+            const userId = userIdInput.value.trim();
+            if (!userId) {
+                alert('Please enter a User ID');
+                return;
+            }
+
+            socket = io('http://localhost:8001', {
+                query: { userId: userId }
+            });
+
+            socket.on('connect', () => {
+                statusDiv.textContent = `Connected as ${userId}`;
+                statusDiv.className = 'status connected';
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                sendTestBtn.disabled = false;
+            });
+
+            socket.on('disconnect', () => {
+                statusDiv.textContent = 'Disconnected';
+                statusDiv.className = 'status disconnected';
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                sendTestBtn.disabled = true;
+            });
+
+            socket.on('notification', (data) => {
+                const div = document.createElement('div');
+                div.className = 'notification';
+                div.innerHTML = `
+                    <strong>${data.type || 'NOTIFICATION'}</strong><br>
+                    ${data.message || 'No message'}<br>
+                    <small>${new Date().toLocaleTimeString()}</small>
+                `;
+                notificationsDiv.insertBefore(div, notificationsDiv.firstChild);
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('Connection error:', error);
+                statusDiv.textContent = 'Connection Error';
+                statusDiv.className = 'status disconnected';
+            });
+        });
+
+        disconnectBtn.addEventListener('click', () => {
+            if (socket) {
+                socket.disconnect();
+            }
+        });
+
+        sendTestBtn.addEventListener('click', () => {
+            const message = testMessageInput.value.trim() || 'Test notification';
+            const notification = {
+                type: 'TEST',
+                message: message,
+                id: Date.now()
+            };
+
+            // Simulate receiving notification
+            const div = document.createElement('div');
+            div.className = 'notification';
+            div.innerHTML = `
+                <strong>TEST</strong><br>
+                ${message}<br>
+                <small>${new Date().toLocaleTimeString()}</small>
+            `;
+            notificationsDiv.insertBefore(div, notificationsDiv.firstChild);
+            testMessageInput.value = '';
+        });
+    </script>
+</body>
+
+</html>

@@ -29,7 +29,6 @@ export const postAnswer = async (req: Request, res: Response) => {
             },
         });
 
-        // Optional notification
         if (question.authorId !== userId) {
             await notificationQueue.add('send_notification', {
                 userId: question.authorId,
@@ -38,6 +37,7 @@ export const postAnswer = async (req: Request, res: Response) => {
                 relatedId: answer.id,
             });
         }
+
 
 
         res.status(201).json(answer);

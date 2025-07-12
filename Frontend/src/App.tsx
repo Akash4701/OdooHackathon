@@ -6,18 +6,18 @@ import TiptapEditor from './components/editor/tiptap';
 
 
 function App() {
-  return (
-              <Router>
-                <Routes>
-                  <Route path="/" element={<Layout />}>
-                    {/* <Route index element={<HomePage />} /> */}
-                    
-                    <Route path="signup" element={<SignUp />} />
-                    <Route path="login" element={<Login />} />
-                  </Route>
-                </Routes>
-              </Router>
-  );
+	return (
+		<Router>
+			<Routes>
+				<Route path="/" element={<Layout />}>
+					{/* <Route index element={<HomePage />} /> */}
+<Route path="editor" element={<TiptapEditor/>}/>
+					<Route path="auth" element={<Auth />} />
+					<Route path="home" element={<Home />} />
+				</Route>
+			</Routes>
+		</Router>
+	);
 }
 
 

@@ -32,7 +32,9 @@ export const authHandler = async (
     throw new Error("Password must be at least 6 characters.");
   }
 
-  const url = `http://localhost:8000/api/v1/auth/${type}`;
+
+  const url = `http://localhost:8001/api/v1/auth/${type}`;
+
   const payload =
     type === "register"
       ? { name: formData.name, email: formData.email, password: formData.password }

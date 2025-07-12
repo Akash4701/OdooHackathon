@@ -24,9 +24,13 @@ const Auth = () => {
 				email: formData.email,
 				password: formData.password
 			});
-			console.log("Login Success:", data);
-			toast.success("Logged in successfully!");
-			navigate('/home');
+			if (data?.token) {
+				localStorage.setItem('token', data.token);
+				toast.success("Logged in successfully!");
+				navigate('/home');
+			} else {
+				throw new Error("Invalid response from server.");
+			}
 		} catch (err: any) {
 			console.error("Login Error:", err.message);
 			toast.error("Login failed. Please check your credentials.");
@@ -118,7 +122,7 @@ const Auth = () => {
 					{/* Submit Button */}
 					<button type='submit'
 						className="w-full py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:opacity-90 transition shadow-md shadow-pink-500/30"
-						
+
 					>
 						{mode === 'login' ? 'Sign In' : 'Sign Up'}
 					</button>

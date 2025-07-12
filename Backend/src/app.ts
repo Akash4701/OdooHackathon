@@ -4,7 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import prisma from './lib/db.config';
 import questionRouter from "./routes/questionRoutes";
-
+import routes from "./routes";
 const app = express();
 
 app.use(cors({
@@ -26,7 +26,7 @@ app.get("/api/healthcheck", async (_req, res) => {
     res.status(500).json({ status: "error", message: "Database connection error" });
   }
 });
-
+app.use("/api/v1", routes);
 app.use("/api/v1/question", questionRouter)
 
 

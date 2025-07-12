@@ -19,5 +19,6 @@
     "mongoose": "^8.16.0",
     "nodemon": "^3.1.10",
     "prisma": "^6.11.1"
-  }
+  },
+  "keywords": []
 }

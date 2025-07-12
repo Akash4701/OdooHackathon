@@ -4,7 +4,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import prisma from './lib/db.config';
 import questionRouter from "./routes/questionRoutes";
-
+import answerRouter from "./routes/answerRoutes"
+import voteRouter from "./routes/voteRoutes"
 const app = express();
 
 app.use(cors({
@@ -28,8 +29,8 @@ app.get("/api/healthcheck", async (_req, res) => {
 });
 
 app.use("/api/v1/question", questionRouter)
-
-
+app.use("/api/v1/answer", answerRouter)
+app.use("/api/v1/answer", voteRouter)
 
 process.on("SIGINT", async () => {
   await prisma.$disconnect();

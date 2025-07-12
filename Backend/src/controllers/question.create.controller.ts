@@ -1,7 +1,16 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/db.config';
-import { CreateQuestionSchema } from '../types/questionCreate';
-import { cleanRegex } from 'zod/v4/core/util.cjs';
+import { z } from "zod"
+
+const CreateQuestionSchema = z.object({
+    title: z.string().min(1, 'Title is required'),
+    description: z.string().min(1, 'Description is required'),
+    tagIds: z.array(z.string().cuid()).optional(),
+});
+
+
+
+type CreateQuestionInput = z.infer<typeof CreateQuestionSchema>;
 
 
 
@@ -53,3 +62,5 @@ export const createQuestion = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+
